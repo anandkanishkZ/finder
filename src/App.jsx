@@ -16,9 +16,9 @@ function App() {
     <AuthProvider>
       <ItemsProvider>
         <Router>
-          <div className="flex flex-col min-h-screen">
+          <div className="app">
             <Navbar />
-            <main className="flex-grow">
+            <main className="main">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/item/:id" element={<ItemDetailPage />} />
