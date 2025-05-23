@@ -10,6 +10,7 @@ import SearchPage from './pages/SearchPage';
 import NewItemPage from './pages/NewItemPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import './styles/Navbar.css';
 
 function App() {
   return (

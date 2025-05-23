@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Search, MapPin, PlusCircle, User, LogOut } from 'lucide-react';
+import { Menu, X, Search, MapPin, PlusCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import '../../styles/Navbar.css';
 
 const Navbar = () => {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -12,96 +13,67 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="nav">
-      <div className="nav-container">
-        <div className="nav-left">
-          <Link to="/" className="nav-logo">
-            <MapPin className="nav-logo-icon" />
-            <span className="nav-logo-text">FinderKeeper</span>
+    <nav className="navbar">
+      <div className="navbar-container">
+        <div className="navbar-left">
+          <Link to="/" className="navbar-logo">
+            <MapPin className="navbar-logo-icon" />
+            <span className="navbar-logo-text">FinderKeeper</span>
           </Link>
-          
-          {/* Desktop Navigation */}
-          <div className="nav-menu desktop">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/search" className="nav-link">
-              <Search className="nav-link-icon" />
+
+          <div className="navbar-links">
+            <Link to="/" className="navbar-link">Home</Link>
+            <Link to="/search" className="navbar-link">
+              <Search className="navbar-link-icon" />
               Browse Items
             </Link>
-            <Link to="/item/new" className="nav-link">
-              <PlusCircle className="nav-link-icon" />
+            <Link to="/item/new" className="navbar-link">
+              <PlusCircle className="navbar-link-icon" />
               Report Item
             </Link>
           </div>
         </div>
-        
-        {/* Desktop Right Menu */}
-        <div className="nav-right desktop">
-          {isAuthenticated ? (
-            <div className="nav-user">
-              <Link to="/profile" className="nav-user-link">
-                <User className="nav-link-icon" />
-                {user?.name}
-              </Link>
-              <button onClick={logout} className="nav-logout">
-                <LogOut className="nav-link-icon" />
-                Logout
-              </button>
-            </div>
-          ) : (
-            <div className="nav-auth">
-              <Link to="/login" className="button button-secondary">Login</Link>
-              <Link to="/register" className="button button-primary">Register</Link>
+
+        <div className="navbar-right">
+          {!isAuthenticated && (
+            <div className="navbar-auth">
+              <Link to="/login" className="navbar-button login">Login</Link>
+              <Link to="/register" className="navbar-button register">Register</Link>
             </div>
           )}
+
+          <button className="navbar-menu-button" onClick={toggleMenu}>
+            {isMenuOpen ? <X /> : <Menu />}
+          </button>
         </div>
-        
-        {/* Mobile menu button */}
-        <button onClick={toggleMenu} className="nav-menu-button mobile">
-          <span className="sr-only">Open main menu</span>
-          {isMenuOpen ? <X /> : <Menu />}
-        </button>
       </div>
-      
-      {/* Mobile menu */}
+
       {isMenuOpen && (
-        <div className="nav-mobile">
-          <div className="nav-mobile-links">
-            <Link to="/" className="nav-mobile-link" onClick={toggleMenu}>Home</Link>
-            <Link to="/search" className="nav-mobile-link" onClick={toggleMenu}>
-              <Search className="nav-link-icon" />
+        <div className="navbar-mobile">
+          <div className="navbar-mobile-links">
+            <Link to="/" className="navbar-mobile-link" onClick={toggleMenu}>
+              Home
+            </Link>
+            <Link to="/search" className="navbar-mobile-link" onClick={toggleMenu}>
+              <Search className="navbar-link-icon" />
               Browse Items
             </Link>
-            <Link to="/item/new" className="nav-mobile-link" onClick={toggleMenu}>
-              <PlusCircle className="nav-link-icon" />
+            <Link to="/item/new" className="navbar-mobile-link" onClick={toggleMenu}>
+              <PlusCircle className="navbar-link-icon" />
               Report Item
             </Link>
           </div>
-          
-          <div className="nav-mobile-auth">
-            {isAuthenticated ? (
-              <>
-                <Link to="/profile" className="nav-mobile-link" onClick={toggleMenu}>
-                  <User className="nav-link-icon" />
-                  Profile
-                </Link>
-                <button
-                  onClick={() => {
-                    logout();
-                    toggleMenu();
-                  }}
-                  className="nav-mobile-link"
-                >
-                  <LogOut className="nav-link-icon" />
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="nav-mobile-link" onClick={toggleMenu}>Login</Link>
-                <Link to="/register" className="nav-mobile-link" onClick={toggleMenu}>Register</Link>
-              </>
-            )}
-          </div>
+
+          {!isAuthenticated && (
+            <div className="navbar-mobile-auth">
+              <Link to="/login" className="navbar-mobile-button login" onClick={toggleMenu}>
+                Login
+              </Link>
+              <Link to="/register" className="navbar-mobile-button register" onClick={toggleMenu}>
+                Register
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>
