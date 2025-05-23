@@ -62,32 +62,6 @@ const LoginPage = () => {
     }
   };
   
-  const handleDemoUserLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await login('user@example.com', 'password');
-      navigate(redirectTo || '/');
-    } catch (error) {
-      setErrors({
-        ...errors,
-        general: 'Failed to login with demo user account',
-      });
-    }
-  };
-
-  const handleDemoAdminLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await login('admin@example.com', 'adminpassword');
-      navigate(redirectTo || '/admin-dashboard');
-    } catch (error) {
-      setErrors({
-        ...errors,
-        general: 'Failed to login with demo admin account',
-      });
-    }
-  };
-  
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -172,20 +146,6 @@ const LoginPage = () => {
               className="button button-primary full-width"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
-            </button>
-            
-            <button
-              onClick={handleDemoUserLogin}
-              className="button button-secondary full-width"
-            >
-              Demo User Login (user@example.com)
-            </button>
-
-            <button
-              onClick={handleDemoAdminLogin}
-              className="button button-secondary full-width"
-            >
-              Demo Admin Login (admin@example.com)
             </button>
           </div>
         </form>
