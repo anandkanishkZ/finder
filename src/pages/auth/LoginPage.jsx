@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import '../../styles/LoginPage.css';
 
 const LoginPage = () => {
   const { login, isLoading } = useAuth();
