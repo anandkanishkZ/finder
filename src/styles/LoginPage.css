@@ -97,21 +97,24 @@
 
 .input-icon {
   position: absolute;
-  left: 1rem;
+  left: 0.875rem;
   width: 1.25rem;
   height: 1.25rem;
   color: var(--gray-400);
   pointer-events: none;
+  z-index: 1;
 }
 
 .form-input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 3rem;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
   border: 1px solid var(--gray-300);
   border-radius: 0.375rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
   transition: all 0.2s;
+  position: relative;
+  background: transparent;
 }
 
 .form-input:focus {
