@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, Calendar, Tag, MapPin } from 'lucide-react';
 
 const categoryOptions = [
   { value: 'electronics', label: 'Electronics' },
@@ -21,39 +21,37 @@ const statusOptions = [
 ];
 
 const SearchFilters = ({ onFilter, initialFilters = {} }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({
-    status: initialFilters.status || undefined,
-    category: initialFilters.category || undefined,
+    status: initialFilters.status || '',
+    category: initialFilters.category || '',
     dateFrom: initialFilters.dateFrom || null,
     dateTo: initialFilters.dateTo || null,
   });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    
-    if (name === 'dateFrom' || name === 'dateTo') {
-      setFilters({
-        ...filters,
-        [name]: value ? new Date(value) : null,
-      });
-    } else {
-      setFilters({
-        ...filters,
-        [name]: value || undefined,
-      });
-    }
+    const newFilters = {
+      ...filters,
+      [name]: value || undefined,
+    };
+    setFilters(newFilters);
+    onFilter(newFilters);
   };
 
-  const handleApplyFilters = () => {
-    onFilter(filters);
-    setIsOpen(false);
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    const newFilters = {
+      ...filters,
+      [name]: value ? new Date(value) : null,
+    };
+    setFilters(newFilters);
+    onFilter(newFilters);
   };
 
   const handleResetFilters = () => {
     const resetFilters = {
-      status: undefined,
-      category: undefined,
+      status: '',
+      category: '',
       dateFrom: null,
       dateTo: null,
     };
@@ -63,121 +61,86 @@ const SearchFilters = ({ onFilter, initialFilters = {} }) => {
 
   const formatDateForInput = (date) => {
     if (!date) return '';
-    const d = new Date(date);
-    return d.toISOString().split('T')[0];
+    return new Date(date).toISOString().split('T')[0];
   };
 
   return (
-    <div className="search-filters">
-      <div className="search-filters-header">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="search-filters-toggle"
-        >
-          <Filter className="search-filters-icon" />
-          Filters
-          {Object.values(filters).some(v => v !== undefined && v !== null) && (
-            <span className="search-filters-badge">Active</span>
-          )}
-        </button>
-        
-        {Object.values(filters).some(v => v !== undefined && v !== null) && (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Status
+          </label>
+          <select
+            name="status"
+            value={filters.status || ''}
+            onChange={handleFilterChange}
+            className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          >
+            <option value="">All Statuses</option>
+            {statusOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Category
+          </label>
+          <select
+            name="category"
+            value={filters.category || ''}
+            onChange={handleFilterChange}
+            className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          >
+            <option value="">All Categories</option>
+            {categoryOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            From Date
+          </label>
+          <input
+            type="date"
+            name="dateFrom"
+            value={formatDateForInput(filters.dateFrom)}
+            onChange={handleDateChange}
+            className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            To Date
+          </label>
+          <input
+            type="date"
+            name="dateTo"
+            value={formatDateForInput(filters.dateTo)}
+            onChange={handleDateChange}
+            className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      {Object.values(filters).some(value => value) && (
+        <div className="flex justify-end">
           <button
             onClick={handleResetFilters}
-            className="search-filters-clear"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
           >
-            <X className="search-filters-icon-small" />
-            Clear all
+            <X className="h-4 w-4" />
+            Clear all filters
           </button>
-        )}
-      </div>
-      
-      {isOpen && (
-        <div className="search-filters-panel">
-          <div className="search-filters-grid">
-            <div className="search-filters-field">
-              <label htmlFor="status" className="search-filters-label">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={filters.status || ''}
-                onChange={handleFilterChange}
-                className="search-filters-select"
-              >
-                <option value="">All Statuses</option>
-                {statusOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="search-filters-field">
-              <label htmlFor="category" className="search-filters-label">
-                Category
-              </label>
-              <select
-                id="category"
-                name="category"
-                value={filters.category || ''}
-                onChange={handleFilterChange}
-                className="search-filters-select"
-              >
-                <option value="">All Categories</option>
-                {categoryOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="search-filters-field">
-              <label htmlFor="dateFrom" className="search-filters-label">
-                From Date
-              </label>
-              <input
-                type="date"
-                id="dateFrom"
-                name="dateFrom"
-                value={formatDateForInput(filters.dateFrom)}
-                onChange={handleFilterChange}
-                className="search-filters-input"
-              />
-            </div>
-            
-            <div className="search-filters-field">
-              <label htmlFor="dateTo" className="search-filters-label">
-                To Date
-              </label>
-              <input
-                type="date"
-                id="dateTo"
-                name="dateTo"
-                value={formatDateForInput(filters.dateTo)}
-                onChange={handleFilterChange}
-                className="search-filters-input"
-              />
-            </div>
-          </div>
-          
-          <div className="search-filters-actions">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="button button-secondary"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleApplyFilters}
-              className="button button-primary"
-            >
-              Apply Filters
-            </button>
-          </div>
         </div>
       )}
     </div>
