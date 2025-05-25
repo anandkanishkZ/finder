@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, MapPin, Compass, MessageCircle, Zap, User } from 'lucide-react';
+import { Search, MapPin, Compass, MessageCircle, Zap, User, ArrowRight } from 'lucide-react';
 import { useItems } from '../context/ItemsContext';
 import ItemCard from '../components/ui/ItemCard';
 import '../styles/HomePage.css';
@@ -55,9 +55,11 @@ const HomePage = () => {
           
           <div className="hero-actions">
             <Link to="/lost" className="hero-button secondary">
+              <MapPin size={24} />
               I Lost Something
             </Link>
             <Link to="/found" className="hero-button primary">
+              <Compass size={24} />
               I Found Something
             </Link>
           </div>
@@ -96,7 +98,7 @@ const HomePage = () => {
         <div className="recent-items-header">
           <h2 className="recent-items-title">Recent Listings</h2>
           <Link to="/search" className="view-all-link">
-            View All →
+            View All <ArrowRight size={20} />
           </Link>
         </div>
         

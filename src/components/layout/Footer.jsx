@@ -5,25 +5,25 @@ import { MapPin, Mail, Phone, Facebook, Twitter, Instagram } from 'lucide-react'
 const Footer = () => {
   return (
     <footer className="footer">
-      <div className="footer-content container">
+      <div className="footer-content">
         <div className="footer-grid">
           {/* About Section */}
           <div className="footer-section">
-            <div className="footer-logo">
+            <Link to="/" className="footer-logo">
               <MapPin className="footer-logo-icon" />
               <span className="footer-logo-text">FinderKeeper</span>
-            </div>
+            </Link>
             <p className="footer-description">
               Helping people reconnect with their lost belongings and rewarding honest finders since 2025.
             </p>
             <div className="footer-social">
-              <a href="#" className="footer-social-link">
+              <a href="#" className="footer-social-link" aria-label="Facebook">
                 <Facebook />
               </a>
-              <a href="#" className="footer-social-link">
+              <a href="#" className="footer-social-link" aria-label="Twitter">
                 <Twitter />
               </a>
-              <a href="#" className="footer-social-link">
+              <a href="#" className="footer-social-link" aria-label="Instagram">
                 <Instagram />
               </a>
             </div>
@@ -63,11 +63,11 @@ const Footer = () => {
               </li>
               <li className="footer-contact-item">
                 <Mail className="footer-contact-icon" />
-                <span>help@finderkeeper.com</span>
+                <a href="mailto:help@finderkeeper.com" className="footer-link">help@finderkeeper.com</a>
               </li>
               <li className="footer-contact-item">
                 <Phone className="footer-contact-icon" />
-                <span>+1 (555) 123-4567</span>
+                <a href="tel:+15551234567" className="footer-link">+1 (555) 123-4567</a>
               </li>
             </ul>
           </div>
