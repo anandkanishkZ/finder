@@ -53,13 +53,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
-      
+
       if (data.user) {
         await loadUserProfile(data.user.id);
         toast.success('Welcome back!');
@@ -67,11 +68,14 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       toast.error(error.message || 'Failed to sign in');
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const register = async (name, email, password) => {
     try {
+      setIsLoading(true);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -88,11 +92,14 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       toast.error(error.message || 'Failed to create account');
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const logout = async () => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setUser(null);
@@ -100,6 +107,8 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       toast.error(error.message || 'Failed to log out');
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
