@@ -4,6 +4,12 @@ import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
 
+// Mock admin credentials
+const MOCK_ADMIN = {
+  email: 'admin@finderkeeper.com',
+  password: 'admin123'
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [supabaseUser, setSupabaseUser] = useState(null);
@@ -55,6 +61,19 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      // Check for mock admin login
+      if (email === MOCK_ADMIN.email && password === MOCK_ADMIN.password) {
+        const mockUser = {
+          id: 'admin-id',
+          email: MOCK_ADMIN.email,
+          name: 'Admin User',
+          isAdmin: true
+        };
+        setUser(mockUser);
+        toast.success('Welcome back, Admin!');
+        return;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -96,6 +115,12 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      if (user?.isAdmin) {
+        setUser(null);
+        toast.success('Admin logged out successfully');
+        return;
+      }
+
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setUser(null);
