@@ -10,22 +10,26 @@ export const AuthProvider = ({ children }) => {
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    // Check active session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        loadUserProfile(session.user.id);
-      } else {
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          await loadUserProfile(session.user.id);
+        }
+      } catch (error) {
+        console.error('Error checking auth session:', error);
+      } finally {
         setIsInitializing(false);
       }
-    });
+    };
 
-    // Listen for auth changes
+    initializeAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         await loadUserProfile(session.user.id);
       } else {
         setUser(null);
-        setIsInitializing(false);
       }
     });
 
@@ -47,8 +51,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Error loading user profile:', error);
       toast.error('Failed to load user profile');
-    } finally {
-      setIsInitializing(false);
+      setUser(null);
     }
   };
 
@@ -65,7 +68,9 @@ export const AuthProvider = ({ children }) => {
       if (data.user) {
         await loadUserProfile(data.user.id);
         toast.success('Welcome back!');
+        return true;
       }
+      return false;
     } catch (error) {
       toast.error(error.message || 'Failed to sign in');
       throw error;
@@ -89,7 +94,9 @@ export const AuthProvider = ({ children }) => {
 
       if (data.user) {
         toast.success('Registration successful! Please check your email to verify your account.');
+        return true;
       }
+      return false;
     } catch (error) {
       toast.error(error.message || 'Failed to create account');
       throw error;
@@ -123,6 +130,14 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
     isAdmin: user?.is_admin || false,
   };
+
+  if (isInitializing) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
