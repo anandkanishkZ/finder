@@ -21,7 +21,6 @@ const LoginPage = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     
-    // Clear error for this field
     if (errors[name]) {
       setErrors({ ...errors, [name]: undefined });
     }
@@ -52,12 +51,14 @@ const LoginPage = () => {
     }
     
     try {
-      await login(formData.email, formData.password);
-      navigate(redirectTo || '/');
+      const success = await login(formData.email, formData.password);
+      if (success) {
+        navigate(redirectTo || '/');
+      }
     } catch (error) {
       setErrors({
         ...errors,
-        general: 'Invalid email or password',
+        general: error.message || 'Invalid email or password',
       });
     }
   };
@@ -146,7 +147,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="button button-primary full-width"
+              className={`button button-primary full-width ${isLoading ? 'loading' : ''}`}
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
