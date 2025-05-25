@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Mail, Lock, User, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import '../../styles/RegisterPage.css';
 
 const RegisterPage = () => {
   const { register, isLoading } = useAuth();
@@ -19,8 +20,6 @@ const RegisterPage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
-    // Clear error for this field
     if (errors[name]) {
       setErrors({ ...errors, [name]: undefined });
     }
@@ -72,139 +71,111 @@ const RegisterPage = () => {
   };
   
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="auth-logo">
-            <MapPin className="auth-logo-icon" />
+    <div className="register-page">
+      <div className="register-container">
+        <div className="register-card">
+          <div className="register-header">
+            <div className="register-logo">
+              <MapPin className="register-logo-icon" />
+              <span className="register-logo-text">FinderKeeper</span>
+            </div>
+            <h1>Create your account</h1>
+            <p>Join our community and start finding or reporting lost items</p>
           </div>
-          <h2 className="auth-title">Create an account</h2>
-          <p className="auth-subtitle">
-            Join FinderKeeper to report lost items or help others find their belongings
-          </p>
-        </div>
-        
-        {errors.general && (
-          <div className="auth-error">
-            <AlertCircle className="error-icon" />
-            <p className="error-message">{errors.general}</p>
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-fields">
-            <div className="form-field">
-              <label htmlFor="name" className="form-label">
+
+          {errors.general && (
+            <div className="error-banner">
+              <AlertCircle className="error-icon" />
+              <span>{errors.general}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="register-form">
+            <div className="form-group">
+              <label htmlFor="name">
+                <User className="input-icon" />
                 Full Name
               </label>
-              <div className="input-group">
-                <User className="input-icon" />
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className={`form-input ${errors.name ? 'error' : ''}`}
-                  placeholder="John Doe"
-                />
-              </div>
-              {errors.name && <p className="error-message">{errors.name}</p>}
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className={errors.name ? 'error' : ''}
+                placeholder="John Doe"
+              />
+              {errors.name && <span className="error-message">{errors.name}</span>}
             </div>
-            
-            <div className="form-field">
-              <label htmlFor="email" className="form-label">
-                Email address
-              </label>
-              <div className="input-group">
+
+            <div className="form-group">
+              <label htmlFor="email">
                 <Mail className="input-icon" />
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className={`form-input ${errors.email ? 'error' : ''}`}
-                  placeholder="your@email.com"
-                />
-              </div>
-              {errors.email && <p className="error-message">{errors.email}</p>}
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={errors.email ? 'error' : ''}
+                placeholder="you@example.com"
+              />
+              {errors.email && <span className="error-message">{errors.email}</span>}
             </div>
-            
-            <div className="form-field">
-              <label htmlFor="password" className="form-label">
+
+            <div className="form-group">
+              <label htmlFor="password">
+                <Lock className="input-icon" />
                 Password
               </label>
-              <div className="input-group">
-                <Lock className="input-icon" />
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className={`form-input ${errors.password ? 'error' : ''}`}
-                  placeholder="••••••••"
-                />
-              </div>
-              {errors.password && <p className="error-message">{errors.password}</p>}
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={errors.password ? 'error' : ''}
+                placeholder="••••••••"
+              />
+              {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
-            
-            <div className="form-field">
-              <label htmlFor="confirmPassword" className="form-label">
+
+            <div className="form-group">
+              <label htmlFor="confirmPassword">
+                <Lock className="input-icon" />
                 Confirm Password
               </label>
-              <div className="input-group">
-                <Lock className="input-icon" />
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
-                  placeholder="••••••••"
-                />
-              </div>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                className={errors.confirmPassword ? 'error' : ''}
+                placeholder="••••••••"
+              />
               {errors.confirmPassword && (
-                <p className="error-message">{errors.confirmPassword}</p>
+                <span className="error-message">{errors.confirmPassword}</span>
               )}
             </div>
-          </div>
-          
-          <div className="form-actions">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="button button-primary full-width"
-            >
-              {isLoading ? 'Creating account...' : 'Create account'}
+
+            <button type="submit" className="register-button" disabled={isLoading}>
+              {isLoading ? 'Creating account...' : 'Create Account'}
             </button>
+          </form>
+
+          <div className="register-footer">
+            <p className="terms-text">
+              By creating an account, you agree to our{' '}
+              <Link to="/terms">Terms of Service</Link> and{' '}
+              <Link to="/privacy">Privacy Policy</Link>
+            </p>
+            <p className="login-link">
+              Already have an account? <Link to="/login">Sign in</Link>
+            </p>
           </div>
-          
-          <div className="terms-privacy">
-            By signing up, you agree to our{' '}
-            <Link to="/terms" className="auth-link">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link to="/privacy" className="auth-link">
-              Privacy Policy
-            </Link>
-          </div>
-        </form>
-        
-        <div className="auth-footer">
-          <p>
-            Already have an account?{' '}
-            <Link to="/login" className="auth-link">
-              Sign in
-            </Link>
-          </p>
         </div>
       </div>
     </div>
