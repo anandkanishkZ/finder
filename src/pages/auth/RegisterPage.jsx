@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { MapPin, User, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/RegisterPage.css';
 
@@ -89,57 +89,69 @@ const RegisterPage = () => {
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
             <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className={errors.name ? 'error' : ''}
-              placeholder="John Doe"
-            />
+            <div className="input-wrapper">
+              <User className="input-icon" size={20} />
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className={errors.name ? 'error' : ''}
+                placeholder="John Doe"
+              />
+            </div>
             {errors.name && <span className="error-message">{errors.name}</span>}
           </div>
 
           <div className="form-group">
             <label htmlFor="email">Email address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={errors.email ? 'error' : ''}
-              placeholder="your@email.com"
-            />
+            <div className="input-wrapper">
+              <Mail className="input-icon" size={20} />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={errors.email ? 'error' : ''}
+                placeholder="your@email.com"
+              />
+            </div>
             {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
 
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className={errors.password ? 'error' : ''}
-              placeholder="••••••••"
-            />
+            <div className="input-wrapper">
+              <Lock className="input-icon" size={20} />
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={errors.password ? 'error' : ''}
+                placeholder="••••••••"
+              />
+            </div>
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
           <div className="form-group">
             <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleInputChange}
-              className={errors.confirmPassword ? 'error' : ''}
-              placeholder="••••••••"
-            />
+            <div className="input-wrapper">
+              <Lock className="input-icon" size={20} />
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                className={errors.confirmPassword ? 'error' : ''}
+                placeholder="••••••••"
+              />
+            </div>
             {errors.confirmPassword && (
               <span className="error-message">{errors.confirmPassword}</span>
             )}
