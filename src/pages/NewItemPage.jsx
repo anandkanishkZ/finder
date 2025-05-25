@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, Trash2, ArrowLeft, AlertCircle, MapPin, User, Calendar, Tag, Mail, Lock } from 'lucide-react';
+import { Camera, Trash2, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useItems } from '../context/ItemsContext';
-import '../styles/NewItemPage.css';
 
 const categoryOptions = [
-  { value: 'electronics', label: 'Electronics', icon: <MapPin /> },
-  { value: 'jewelry', label: 'Jewelry', icon: <MapPin /> },
-  { value: 'clothing', label: 'Clothing', icon: <MapPin /> },
-  { value: 'documents', label: 'Documents', icon: <MapPin /> },
-  { value: 'keys', label: 'Keys', icon: <MapPin /> },
-  { value: 'pets', label: 'Pets', icon: <MapPin /> },
-  { value: 'accessories', label: 'Accessories', icon: <MapPin /> },
-  { value: 'other', label: 'Other', icon: <MapPin /> },
+  { value: 'electronics', label: 'Electronics' },
+  { value: 'jewelry', label: 'Jewelry' },
+  { value: 'clothing', label: 'Clothing' },
+  { value: 'documents', label: 'Documents' },
+  { value: 'keys', label: 'Keys' },
+  { value: 'pets', label: 'Pets' },
+  { value: 'accessories', label: 'Accessories' },
+  { value: 'other', label: 'Other' },
 ];
 
 const NewItemPage = () => {
@@ -28,7 +27,7 @@ const NewItemPage = () => {
     status: 'lost',
     date: new Date().toISOString().split('T')[0],
     location: '',
-    contactInfo: user?.email || '',
+    contact_info: user?.email || '',
     anonymous: false,
   });
   
@@ -47,9 +46,9 @@ const NewItemPage = () => {
           </p>
           <button
             onClick={() => navigate('/login', { state: { redirectTo: '/item/new' } })}
-            className="auth-required-button"
+            className="button button-primary"
           >
-            Login to Continue
+            Login
           </button>
         </div>
       </div>
@@ -64,6 +63,7 @@ const NewItemPage = () => {
       [name]: type === 'checkbox' ? checked : value
     });
     
+    // Clear error when user starts typing
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
     }
@@ -107,10 +107,10 @@ const NewItemPage = () => {
       newErrors.location = 'Location is required';
     }
     
-    if (!formData.contactInfo.trim()) {
-      newErrors.contactInfo = 'Contact information is required';
-    } else if (!formData.contactInfo.includes('@')) {
-      newErrors.contactInfo = 'Please enter a valid email address';
+    if (!formData.contact_info.trim()) {
+      newErrors.contact_info = 'Contact information is required';
+    } else if (!formData.contact_info.includes('@')) {
+      newErrors.contact_info = 'Please enter a valid email address';
     }
     
     setErrors(newErrors);
@@ -130,8 +130,8 @@ const NewItemPage = () => {
       const newItem = await addItem({
         ...formData,
         date: new Date(formData.date),
-        imageUrl: imagePreview,
-        userId: user?.id,
+        image_url: imagePreview,
+        user_id: user?.id,
       });
       
       navigate(`/item/${newItem.id}`);
@@ -147,117 +147,60 @@ const NewItemPage = () => {
   };
   
   return (
-    <div className="new-item-page">
-      <div className="new-item-container">
-        <button
-          onClick={() => navigate(-1)}
-          className="back-button"
-        >
-          <ArrowLeft className="back-icon" />
-          Back
-        </button>
-        
-        <div className="new-item-card">
-          <div className="new-item-header">
-            <h1 className="new-item-title">Report an Item</h1>
-            <p className="new-item-subtitle">
-              Please provide accurate information to help connect lost items with their owners
-            </p>
-          </div>
-          
-          {errors.submit && (
-            <div className="error-banner">
-              <AlertCircle className="error-icon" />
-              <p>{errors.submit}</p>
-            </div>
-          )}
+    <div className="new-item">
+      <button
+        onClick={() => navigate(-1)}
+        className="back-button"
+      >
+        <ArrowLeft className="back-button-icon" />
+        Back
+      </button>
+      
+      <div className="new-item-card">
+        <div className="new-item-content">
+          <h1 className="new-item-title">Report an Item</h1>
           
           <form onSubmit={handleSubmit} className="new-item-form">
             <div className="form-grid">
               <div className="form-field-full">
                 <div className="status-toggle">
-                  <label className="status-label">Item Status</label>
-                  <div className="toggle-group">
-                    <button
-                      type="button"
-                      className={`toggle-button ${formData.status === 'lost' ? 'active' : ''}`}
-                      onClick={() => handleInputChange({ target: { name: 'status', value: 'lost' } })}
-                    >
-                      <MapPin className="toggle-icon" />
-                      Lost Item
-                    </button>
-                    <button
-                      type="button"
-                      className={`toggle-button ${formData.status === 'found' ? 'active' : ''}`}
-                      onClick={() => handleInputChange({ target: { name: 'status', value: 'found' } })}
-                    >
-                      <User className="toggle-icon" />
-                      Found Item
-                    </button>
+                  <label className="status-label">
+                    Item Status
+                  </label>
+                  <div className="toggle-switch">
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        name="status"
+                        checked={formData.status === 'found'}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          status: e.target.checked ? 'found' : 'lost'
+                        })}
+                      />
+                      <span className="slider"></span>
+                    </label>
+                    <span className="toggle-label">
+                      {formData.status === 'lost' ? 'Lost Item' : 'Found Item'}
+                    </span>
                   </div>
                 </div>
               </div>
               
-              <div className="form-field">
+              <div className="form-field-full">
                 <label htmlFor="name" className="form-label">
                   Item Name*
                 </label>
-                <div className="input-group">
-                  <Tag className="input-icon" />
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.name ? 'error' : ''}`}
-                    placeholder="e.g., iPhone 13 Pro, Gold Ring"
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className={`form-input ${errors.name ? 'error' : ''}`}
+                  placeholder="e.g., iPhone 13 Pro, Gold Ring, Car Keys"
+                />
                 {errors.name && <p className="error-message">{errors.name}</p>}
-              </div>
-              
-              <div className="form-field">
-                <label htmlFor="category" className="form-label">
-                  Category*
-                </label>
-                <div className="input-group">
-                  <MapPin className="input-icon" />
-                  <select
-                    id="category"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.category ? 'error' : ''}`}
-                  >
-                    <option value="">Select a category</option>
-                    {categoryOptions.map(option => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {errors.category && <p className="error-message">{errors.category}</p>}
-              </div>
-              
-              <div className="form-field">
-                <label htmlFor="date" className="form-label">
-                  Date {formData.status === 'lost' ? 'Lost' : 'Found'}*
-                </label>
-                <div className="input-group">
-                  <Calendar className="input-icon" />
-                  <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                    max={new Date().toISOString().split('T')[0]}
-                    className={`form-input ${errors.date ? 'error' : ''}`}
-                  />
-                </div>
-                {errors.date && <p className="error-message">{errors.date}</p>}
               </div>
               
               <div className="form-field-full">
@@ -267,31 +210,65 @@ const NewItemPage = () => {
                 <textarea
                   id="description"
                   name="description"
+                  rows={3}
                   value={formData.description}
                   onChange={handleInputChange}
                   className={`form-textarea ${errors.description ? 'error' : ''}`}
-                  placeholder="Provide a detailed description of the item..."
-                  rows={4}
+                  placeholder="Provide a detailed description of the item, including any identifying features..."
                 />
                 {errors.description && <p className="error-message">{errors.description}</p>}
+              </div>
+              
+              <div className="form-field">
+                <label htmlFor="category" className="form-label">
+                  Category*
+                </label>
+                <select
+                  id="category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  className={`form-select ${errors.category ? 'error' : ''}`}
+                >
+                  <option value="">Select a category</option>
+                  {categoryOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.category && <p className="error-message">{errors.category}</p>}
+              </div>
+              
+              <div className="form-field">
+                <label htmlFor="date" className="form-label">
+                  Date {formData.status === 'lost' ? 'Lost' : 'Found'}*
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  max={new Date().toISOString().split('T')[0]}
+                  className={`form-input ${errors.date ? 'error' : ''}`}
+                />
+                {errors.date && <p className="error-message">{errors.date}</p>}
               </div>
               
               <div className="form-field-full">
                 <label htmlFor="location" className="form-label">
                   Location*
                 </label>
-                <div className="input-group">
-                  <MapPin className="input-icon" />
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.location ? 'error' : ''}`}
-                    placeholder="e.g., Central Park, NYC Public Library"
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  className={`form-input ${errors.location ? 'error' : ''}`}
+                  placeholder="e.g., Central Park, NYC Public Library, Main Street Mall"
+                />
                 {errors.location && <p className="error-message">{errors.location}</p>}
               </div>
               
@@ -301,20 +278,21 @@ const NewItemPage = () => {
                 </label>
                 {!imagePreview ? (
                   <div className="image-upload">
-                    <input
-                      type="file"
-                      id="image"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="image-input"
-                    />
-                    <div className="upload-content">
-                      <Camera className="upload-icon" />
-                      <p className="upload-text">
-                        <span className="upload-link">Upload an image</span>
-                        <span className="upload-or">or drag and drop</span>
-                      </p>
-                      <p className="upload-hint">PNG, JPG up to 10MB</p>
+                    <Camera className="upload-icon" />
+                    <div className="upload-text">
+                      <label htmlFor="image-upload" className="upload-label">
+                        Upload an image
+                      </label>
+                      <input
+                        id="image-upload"
+                        name="image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
+                      <p className="upload-hint">or drag and drop</p>
+                      <p className="upload-formats">PNG, JPG, GIF up to 10MB</p>
                     </div>
                   </div>
                 ) : (
@@ -335,23 +313,20 @@ const NewItemPage = () => {
                 )}
               </div>
               
-              <div className="form-field">
-                <label htmlFor="contactInfo" className="form-label">
+              <div className="form-field-full">
+                <label htmlFor="contact_info" className="form-label">
                   Contact Email*
                 </label>
-                <div className="input-group">
-                  <Mail className="input-icon" />
-                  <input
-                    type="email"
-                    id="contactInfo"
-                    name="contactInfo"
-                    value={formData.contactInfo}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.contactInfo ? 'error' : ''}`}
-                    placeholder="your@email.com"
-                  />
-                </div>
-                {errors.contactInfo && <p className="error-message">{errors.contactInfo}</p>}
+                <input
+                  type="email"
+                  id="contact_info"
+                  name="contact_info"
+                  value={formData.contact_info}
+                  onChange={handleInputChange}
+                  className={`form-input ${errors.contact_info ? 'error' : ''}`}
+                  placeholder="your@email.com"
+                />
+                {errors.contact_info && <p className="error-message">{errors.contact_info}</p>}
               </div>
               
               {formData.status === 'found' && (
@@ -364,27 +339,32 @@ const NewItemPage = () => {
                       onChange={handleInputChange}
                       className="checkbox-input"
                     />
-                    <Lock className="checkbox-icon" />
                     <span className="checkbox-text">
-                      Keep my contact information private
+                      Keep my contact information private (users will need to request access)
                     </span>
                   </label>
                 </div>
               )}
             </div>
             
+            {errors.submit && (
+              <div className="error-message submit-error">
+                {errors.submit}
+              </div>
+            )}
+            
             <div className="form-actions">
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="button-secondary"
+                className="button button-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="button-primary"
+                className="button button-primary"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Report'}
               </button>
