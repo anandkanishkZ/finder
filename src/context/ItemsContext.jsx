@@ -7,7 +7,7 @@ const ItemsContext = createContext();
 
 export const ItemsProvider = ({ children }) => {
   const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -164,22 +164,6 @@ export const ItemsProvider = ({ children }) => {
     getSimilarItems,
     getNearbyItems,
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen text-red-600">
-        <p>{error}</p>
-      </div>
-    );
-  }
 
   return <ItemsContext.Provider value={value}>{children}</ItemsContext.Provider>;
 };

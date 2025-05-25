@@ -6,12 +6,12 @@ import ItemCard from '../components/ui/ItemCard';
 import '../styles/HomePage.css';
 
 const HomePage = () => {
-  const { items, searchItems } = useItems();
+  const { items, isLoading } = useItems();
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   const recentItems = items
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 8);
 
   const handleSearch = (e) => {
@@ -24,6 +24,14 @@ const HomePage = () => {
   const handleCategoryClick = (category) => {
     navigate(`/search?category=${category}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="home">
