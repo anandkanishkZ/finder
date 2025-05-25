@@ -7,7 +7,7 @@ const ItemsContext = createContext();
 
 export const ItemsProvider = ({ children }) => {
   const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -132,23 +132,6 @@ export const ItemsProvider = ({ children }) => {
     });
   };
 
-  const getSimilarItems = (itemId) => {
-    const item = getItemById(itemId);
-    if (!item) return [];
-    
-    return items
-      .filter(i => i.category === item.category && i.id !== itemId)
-      .slice(0, 5);
-  };
-
-  const getNearbyItems = (coordinates, radius) => {
-    return items.filter(item => {
-      if (!item.lat || !item.lng) return false;
-      const distance = calculateDistance(coordinates, { lat: item.lat, lng: item.lng });
-      return distance <= radius;
-    });
-  };
-
   const value = {
     items,
     isLoading,
@@ -161,8 +144,6 @@ export const ItemsProvider = ({ children }) => {
     getItemsByCategory,
     searchItems,
     filterItems,
-    getSimilarItems,
-    getNearbyItems,
   };
 
   return <ItemsContext.Provider value={value}>{children}</ItemsContext.Provider>;

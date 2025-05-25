@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
         console.error('Error initializing auth:', error);
       } finally {
         setIsInitializing(false);
+        setIsLoading(false);
       }
     };
 
@@ -31,6 +32,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
       }
+      setIsLoading(false);
     });
 
     return () => {
@@ -94,7 +96,7 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
 
       if (data.user) {
-        toast.success('Registration successful! Please check your email to verify your account.');
+        toast.success('Registration successful!');
         return true;
       }
       return false;
