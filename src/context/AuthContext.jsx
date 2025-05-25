@@ -6,7 +6,8 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
     // Check active session
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       if (session?.user) {
         loadUserProfile(session.user.id);
       } else {
-        setIsLoading(false);
+        setIsInitializing(false);
       }
     });
 
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }) => {
         await loadUserProfile(session.user.id);
       } else {
         setUser(null);
-        setIsLoading(false);
+        setIsInitializing(false);
       }
     });
 
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Error loading user profile:', error);
       toast.error('Failed to load user profile');
     } finally {
-      setIsLoading(false);
+      setIsInitializing(false);
     }
   };
 
@@ -115,6 +116,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     isLoading,
+    isInitializing,
     login,
     register,
     logout,

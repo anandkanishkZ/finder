@@ -99,6 +99,7 @@ const LoginPage = () => {
                   onChange={handleInputChange}
                   className={`form-input ${errors.email ? 'error' : ''}`}
                   placeholder="your@email.com"
+                  disabled={isLoading}
                 />
               </div>
               {errors.email && <p className="error-message">{errors.email}</p>}
@@ -119,6 +120,7 @@ const LoginPage = () => {
                   onChange={handleInputChange}
                   className={`form-input ${errors.password ? 'error' : ''}`}
                   placeholder="••••••••"
+                  disabled={isLoading}
                 />
               </div>
               {errors.password && <p className="error-message">{errors.password}</p>}
@@ -130,13 +132,14 @@ const LoginPage = () => {
               <input
                 type="checkbox"
                 className="checkbox"
+                disabled={isLoading}
               />
               <span>Remember me</span>
             </label>
             
-            <a href="#" className="forgot-password">
+            <Link to="/forgot-password" className="forgot-password">
               Forgot your password?
-            </a>
+            </Link>
           </div>
           
           <div className="form-actions">
