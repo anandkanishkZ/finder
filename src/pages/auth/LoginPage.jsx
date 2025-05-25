@@ -21,6 +21,7 @@ const LoginPage = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     
+    // Clear error for this field
     if (errors[name]) {
       setErrors({ ...errors, [name]: undefined });
     }
@@ -51,14 +52,12 @@ const LoginPage = () => {
     }
     
     try {
-      const success = await login(formData.email, formData.password);
-      if (success) {
-        navigate(redirectTo || '/');
-      }
+      await login(formData.email, formData.password);
+      navigate(redirectTo || '/');
     } catch (error) {
       setErrors({
         ...errors,
-        general: error.message || 'Invalid email or password',
+        general: 'Invalid email or password',
       });
     }
   };
