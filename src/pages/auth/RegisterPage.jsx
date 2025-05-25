@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/RegisterPage.css';
 
@@ -72,110 +72,93 @@ const RegisterPage = () => {
   
   return (
     <div className="register-page">
-      <div className="register-container">
-        <div className="register-card">
-          <div className="register-header">
-            <div className="register-logo">
-              <MapPin className="register-logo-icon" />
-              <span className="register-logo-text">FinderKeeper</span>
-            </div>
-            <h1>Create your account</h1>
-            <p>Join our community and start finding or reporting lost items</p>
+      <div className="register-card">
+        <div className="register-logo">
+          <MapPin className="register-logo-icon" />
+        </div>
+
+        <h1 className="register-title">Create an account</h1>
+        <p className="register-subtitle">
+          Join FinderKeeper to report lost items or help others find their belongings
+        </p>
+
+        {errors.general && (
+          <div className="error-message general">{errors.general}</div>
+        )}
+
+        <form onSubmit={handleSubmit} className="register-form">
+          <div className="form-group">
+            <label htmlFor="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className={errors.name ? 'error' : ''}
+              placeholder="John Doe"
+            />
+            {errors.name && <span className="error-message">{errors.name}</span>}
           </div>
 
-          {errors.general && (
-            <div className="error-banner">
-              <AlertCircle className="error-icon" />
-              <span>{errors.general}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="register-form">
-            <div className="form-group">
-              <label htmlFor="name">
-                <User className="input-icon" />
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className={errors.name ? 'error' : ''}
-                placeholder="John Doe"
-              />
-              {errors.name && <span className="error-message">{errors.name}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="email">
-                <Mail className="input-icon" />
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className={errors.email ? 'error' : ''}
-                placeholder="you@example.com"
-              />
-              {errors.email && <span className="error-message">{errors.email}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="password">
-                <Lock className="input-icon" />
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                className={errors.password ? 'error' : ''}
-                placeholder="••••••••"
-              />
-              {errors.password && <span className="error-message">{errors.password}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="confirmPassword">
-                <Lock className="input-icon" />
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className={errors.confirmPassword ? 'error' : ''}
-                placeholder="••••••••"
-              />
-              {errors.confirmPassword && (
-                <span className="error-message">{errors.confirmPassword}</span>
-              )}
-            </div>
-
-            <button type="submit" className="register-button" disabled={isLoading}>
-              {isLoading ? 'Creating account...' : 'Create Account'}
-            </button>
-          </form>
-
-          <div className="register-footer">
-            <p className="terms-text">
-              By creating an account, you agree to our{' '}
-              <Link to="/terms">Terms of Service</Link> and{' '}
-              <Link to="/privacy">Privacy Policy</Link>
-            </p>
-            <p className="login-link">
-              Already have an account? <Link to="/login">Sign in</Link>
-            </p>
+          <div className="form-group">
+            <label htmlFor="email">Email address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className={errors.email ? 'error' : ''}
+              placeholder="your@email.com"
+            />
+            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className={errors.password ? 'error' : ''}
+              placeholder="••••••••"
+            />
+            {errors.password && <span className="error-message">{errors.password}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              className={errors.confirmPassword ? 'error' : ''}
+              placeholder="••••••••"
+            />
+            {errors.confirmPassword && (
+              <span className="error-message">{errors.confirmPassword}</span>
+            )}
+          </div>
+
+          <button type="submit" className="create-account-button" disabled={isLoading}>
+            {isLoading ? 'Creating account...' : 'Create account'}
+          </button>
+
+          <p className="terms-text">
+            By signing up, you agree to our{' '}
+            <Link to="/terms" className="link">Terms of Service</Link> and{' '}
+            <Link to="/privacy" className="link">Privacy Policy</Link>
+          </p>
+        </form>
+
+        <div className="login-prompt">
+          Already have an account?{' '}
+          <Link to="/login" className="link">Sign in</Link>
         </div>
       </div>
     </div>
