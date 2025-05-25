@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Search, MapPin, PlusCircle } from 'lucide-react';
+import { Menu, X, Search, MapPin, PlusCircle, Settings } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/Navbar.css';
 
 const Navbar = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -31,14 +31,24 @@ const Navbar = () => {
               <PlusCircle className="navbar-link-icon" />
               Report Item
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="navbar-link admin-link">
+                <Settings className="navbar-link-icon" />
+                Admin Dashboard
+              </Link>
+            )}
           </div>
         </div>
 
         <div className="navbar-right">
-          {!isAuthenticated && (
+          {!isAuthenticated ? (
             <div className="navbar-auth">
               <Link to="/login" className="navbar-button login">Login</Link>
               <Link to="/register" className="navbar-button register">Register</Link>
+            </div>
+          ) : (
+            <div className="navbar-auth">
+              <button onClick={logout} className="navbar-button login">Logout</button>
             </div>
           )}
 
@@ -62,9 +72,15 @@ const Navbar = () => {
               <PlusCircle className="navbar-link-icon" />
               Report Item
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="navbar-mobile-link" onClick={toggleMenu}>
+                <Settings className="navbar-link-icon" />
+                Admin Dashboard
+              </Link>
+            )}
           </div>
 
-          {!isAuthenticated && (
+          {!isAuthenticated ? (
             <div className="navbar-mobile-auth">
               <Link to="/login" className="navbar-mobile-button login" onClick={toggleMenu}>
                 Login
@@ -72,6 +88,12 @@ const Navbar = () => {
               <Link to="/register" className="navbar-mobile-button register" onClick={toggleMenu}>
                 Register
               </Link>
+            </div>
+          ) : (
+            <div className="navbar-mobile-auth">
+              <button onClick={logout} className="navbar-mobile-button login">
+                Logout
+              </button>
             </div>
           )}
         </div>
