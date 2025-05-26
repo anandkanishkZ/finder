@@ -8,7 +8,6 @@ const ItemsContext = createContext();
 export const ItemsProvider = ({ children }) => {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadItems();
@@ -16,19 +15,15 @@ export const ItemsProvider = ({ children }) => {
 
   const loadItems = async () => {
     try {
-      setIsLoading(true);
-      setError(null);
-      
       const { data, error } = await supabase
         .from('items')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setItems(data || []);
+      setItems(data);
     } catch (error) {
       console.error('Error loading items:', error);
-      setError('Failed to load items');
       toast.error('Failed to load items');
     } finally {
       setIsLoading(false);
@@ -96,46 +91,243 @@ export const ItemsProvider = ({ children }) => {
     }
   };
 
-  const getItemById = (id) => {
-    return items.find(item => item.id === id);
+  const getItemById = async (id) => {
+    try {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error getting item:', error);
+      return undefined;
+    }
   };
 
-  const getItemsByStatus = (status) => {
-    return items.filter(item => item.status === status);
+  const getItemsByStatus = async (status) => {
+    try {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*')
+        .eq('status', status);
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error getting items by status:', error);
+      return [];
+    }
   };
 
-  const getItemsByCategory = (category) => {
-    return items.filter(item => item.category === category);
+  const getItemsByCategory = async (category) => {
+    try {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*')
+        .eq('category', category);
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error getting items by category:', error);
+      return [];
+    }
   };
 
-  const searchItems = (query) => {
-    const searchQuery = query.toLowerCase();
-    return items.filter(item =>
-      item.name.toLowerCase().includes(searchQuery) ||
-      item.description.toLowerCase().includes(searchQuery) ||
-      item.location.toLowerCase().includes(searchQuery)
-    );
+  const searchItems = async (query) => {
+    try {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*')
+        .or(`name.ilike.%${query}%,description.ilike.%${query}%,location.ilike.%${query}%`);
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error searching items:', error);
+      return [];
+    }
   };
 
-  const filterItems = (filters) => {
-    return items.filter(item => {
-      if (filters.status && item.status !== filters.status) return false;
-      if (filters.category && item.category !== filters.category) return false;
-      if (filters.dateFrom && new Date(item.date) < new Date(filters.dateFrom)) return false;
-      if (filters.dateTo && new Date(item.date) > new Date(filters.dateTo)) return false;
-      if (filters.location && filters.radius) {
-        if (!item.lat || !item.lng) return false;
-        const distance = calculateDistance(filters.location, { lat: item.lat, lng: item.lng });
-        if (distance > filters.radius) return false;
+  const filterItems = async (filters) => {
+    try {
+      let query = supabase.from('items').select('*');
+
+      if (filters.status) {
+        query = query.eq('status', filters.status);
       }
-      return true;
-    });
+
+      if (filters.category) {
+        query = query.eq('category', filters.category);
+      }
+
+      if (filters.dateFrom) {
+        query = query.gte('date', filters.dateFrom.toISOString());
+      }
+
+      if (filters.dateTo) {
+        query = query.lte('date', filters.dateTo.toISOString());
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      let filteredData = data;
+
+      if (filters.location && filters.radius) {
+        filteredData = filteredData.filter(item => {
+          if (!item.coordinates) return false;
+          const distance = calculateDistance(filters.location, item.coordinates);
+          return distance <= filters.radius;
+        });
+      }
+
+      return filteredData;
+    } catch (error) {
+      console.error('Error filtering items:', error);
+      return [];
+    }
+  };
+
+  const getSimilarItems = async (itemId) => {
+    const item = await getItemById(itemId);
+    if (!item) return [];
+
+    try {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*')
+        .eq('category', item.category)
+        .neq('id', itemId)
+        .limit(5);
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error getting similar items:', error);
+      return [];
+    }
+  };
+
+  const getNearbyItems = async (coordinates, radius) => {
+    try {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*')
+        .not('coordinates', 'is', null);
+
+      if (error) throw error;
+
+      return data.filter(item => {
+        if (!item.coordinates) return false;
+        const distance = calculateDistance(coordinates, item.coordinates);
+        return distance <= radius;
+      });
+    } catch (error) {
+      console.error('Error getting nearby items:', error);
+      return [];
+    }
+  };
+
+  const getRecommendedSafetyPoints = async (coordinates) => {
+    try {
+      const { data, error } = await supabase
+        .from('safety_points')
+        .select('*');
+
+      if (error) throw error;
+
+      return data
+        .map(point => ({
+          ...point,
+          distance: calculateDistance(coordinates, point.coordinates),
+        }))
+        .sort((a, b) => (a.distance || 0) - (b.distance || 0))
+        .slice(0, 3);
+    } catch (error) {
+      console.error('Error getting safety points:', error);
+      return [];
+    }
+  };
+
+  const verifyItem = async (itemId, verificationCode) => {
+    try {
+      const { data, error } = await supabase
+        .from('items')
+        .select('verification_code')
+        .eq('id', itemId)
+        .single();
+
+      if (error) throw error;
+      return data.verification_code === verificationCode;
+    } catch (error) {
+      console.error('Error verifying item:', error);
+      return false;
+    }
+  };
+
+  const reportItem = async (itemId, reason, description) => {
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .insert([{ item_id: itemId, reason, description }]);
+
+      if (error) throw error;
+      toast.success('Report submitted successfully');
+    } catch (error) {
+      console.error('Error reporting item:', error);
+      toast.error('Failed to submit report');
+      throw error;
+    }
+  };
+
+  const incrementViews = async (itemId) => {
+    try {
+      const { error } = await supabase.rpc('increment_views', { item_id: itemId });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error incrementing views:', error);
+    }
+  };
+
+  const getReports = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*, items(*), profiles(*)')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error getting reports:', error);
+      return [];
+    }
+  };
+
+  const updateReport = async (id, status) => {
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .update({ status })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast.success('Report status updated successfully');
+    } catch (error) {
+      console.error('Error updating report:', error);
+      toast.error('Failed to update report status');
+      throw error;
+    }
   };
 
   const value = {
     items,
     isLoading,
-    error,
     addItem,
     updateItem,
     deleteItem,
@@ -144,6 +336,14 @@ export const ItemsProvider = ({ children }) => {
     getItemsByCategory,
     searchItems,
     filterItems,
+    getSimilarItems,
+    getNearbyItems,
+    getRecommendedSafetyPoints,
+    verifyItem,
+    reportItem,
+    incrementViews,
+    getReports,
+    updateReport,
   };
 
   return <ItemsContext.Provider value={value}>{children}</ItemsContext.Provider>;

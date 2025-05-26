@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Camera, Trash2, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useItems } from '../context/ItemsContext';
-import '../styles/NewItemPage.css';
 
 const categoryOptions = [
   { value: 'electronics', label: 'Electronics' },
@@ -47,7 +46,7 @@ const NewItemPage = () => {
           </p>
           <button
             onClick={() => navigate('/login', { state: { redirectTo: '/item/new' } })}
-            className="auth-required-button"
+            className="button button-primary"
           >
             Login
           </button>
@@ -64,6 +63,7 @@ const NewItemPage = () => {
       [name]: type === 'checkbox' ? checked : value
     });
     
+    // Clear error when user starts typing
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
     }
@@ -147,46 +147,42 @@ const NewItemPage = () => {
   };
   
   return (
-    <div className="new-item-page">
-      <div className="new-item-container">
-        <button
-          onClick={() => navigate(-1)}
-          className="back-button"
-        >
-          <ArrowLeft className="back-icon" />
-          Back
-        </button>
-        
-        <div className="new-item-card">
-          <div className="new-item-header">
-            <h1 className="new-item-title">Report an Item</h1>
-            <p className="new-item-subtitle">
-              {formData.status === 'lost' 
-                ? 'Report a lost item to help others find it'
-                : 'Report a found item to help find its owner'}
-            </p>
-          </div>
+    <div className="new-item">
+      <button
+        onClick={() => navigate(-1)}
+        className="back-button"
+      >
+        <ArrowLeft className="back-button-icon" />
+        Back
+      </button>
+      
+      <div className="new-item-card">
+        <div className="new-item-content">
+          <h1 className="new-item-title">Report an Item</h1>
           
           <form onSubmit={handleSubmit} className="new-item-form">
             <div className="form-grid">
               <div className="form-field-full">
                 <div className="status-toggle">
-                  <label className="status-label">Item Status</label>
-                  <div className="toggle-group">
-                    <button
-                      type="button"
-                      className={`toggle-button ${formData.status === 'lost' ? 'active' : ''}`}
-                      onClick={() => handleInputChange({ target: { name: 'status', value: 'lost' } })}
-                    >
-                      Lost Item
-                    </button>
-                    <button
-                      type="button"
-                      className={`toggle-button ${formData.status === 'found' ? 'active' : ''}`}
-                      onClick={() => handleInputChange({ target: { name: 'status', value: 'found' } })}
-                    >
-                      Found Item
-                    </button>
+                  <label className="status-label">
+                    Item Status
+                  </label>
+                  <div className="toggle-switch">
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        name="status"
+                        checked={formData.status === 'found'}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          status: e.target.checked ? 'found' : 'lost'
+                        })}
+                      />
+                      <span className="slider"></span>
+                    </label>
+                    <span className="toggle-label">
+                      {formData.status === 'lost' ? 'Lost Item' : 'Found Item'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -232,7 +228,7 @@ const NewItemPage = () => {
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className={`form-input ${errors.category ? 'error' : ''}`}
+                  className={`form-select ${errors.category ? 'error' : ''}`}
                 >
                   <option value="">Select a category</option>
                   {categoryOptions.map(option => (
@@ -277,25 +273,26 @@ const NewItemPage = () => {
               </div>
               
               <div className="form-field-full">
-                <label className="form-label">Item Image</label>
+                <label className="form-label">
+                  Item Image
+                </label>
                 {!imagePreview ? (
                   <div className="image-upload">
-                    <div className="upload-content">
-                      <Camera className="upload-icon" />
-                      <div className="upload-text">
-                        <label htmlFor="image-upload" className="upload-link">
-                          Click to upload
-                        </label>
-                        <span className="upload-or">or drag and drop</span>
-                        <input
-                          id="image-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="image-input"
-                        />
-                      </div>
-                      <p className="upload-hint">PNG, JPG, GIF up to 10MB</p>
+                    <Camera className="upload-icon" />
+                    <div className="upload-text">
+                      <label htmlFor="image-upload" className="upload-label">
+                        Upload an image
+                      </label>
+                      <input
+                        id="image-upload"
+                        name="image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
+                      <p className="upload-hint">or drag and drop</p>
+                      <p className="upload-formats">PNG, JPG, GIF up to 10MB</p>
                     </div>
                   </div>
                 ) : (
@@ -351,9 +348,8 @@ const NewItemPage = () => {
             </div>
             
             {errors.submit && (
-              <div className="error-banner">
-                <AlertCircle className="error-icon" />
-                <p>{errors.submit}</p>
+              <div className="error-message submit-error">
+                {errors.submit}
               </div>
             )}
             
@@ -361,14 +357,14 @@ const NewItemPage = () => {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="button-secondary"
+                className="button button-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="button-primary"
+                className="button button-primary"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Report'}
               </button>

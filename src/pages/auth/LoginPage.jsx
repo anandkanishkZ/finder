@@ -21,6 +21,7 @@ const LoginPage = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     
+    // Clear error for this field
     if (errors[name]) {
       setErrors({ ...errors, [name]: undefined });
     }
@@ -51,14 +52,12 @@ const LoginPage = () => {
     }
     
     try {
-      const success = await login(formData.email, formData.password);
-      if (success) {
-        navigate(redirectTo || '/');
-      }
+      await login(formData.email, formData.password);
+      navigate(redirectTo || '/');
     } catch (error) {
       setErrors({
         ...errors,
-        general: error.message || 'Invalid email or password',
+        general: 'Invalid email or password',
       });
     }
   };
@@ -100,7 +99,6 @@ const LoginPage = () => {
                   onChange={handleInputChange}
                   className={`form-input ${errors.email ? 'error' : ''}`}
                   placeholder="your@email.com"
-                  disabled={isLoading}
                 />
               </div>
               {errors.email && <p className="error-message">{errors.email}</p>}
@@ -121,7 +119,6 @@ const LoginPage = () => {
                   onChange={handleInputChange}
                   className={`form-input ${errors.password ? 'error' : ''}`}
                   placeholder="••••••••"
-                  disabled={isLoading}
                 />
               </div>
               {errors.password && <p className="error-message">{errors.password}</p>}
@@ -133,21 +130,20 @@ const LoginPage = () => {
               <input
                 type="checkbox"
                 className="checkbox"
-                disabled={isLoading}
               />
               <span>Remember me</span>
             </label>
             
-            <Link to="/forgot-password" className="forgot-password">
+            <a href="#" className="forgot-password">
               Forgot your password?
-            </Link>
+            </a>
           </div>
           
           <div className="form-actions">
             <button
               type="submit"
               disabled={isLoading}
-              className={`button button-primary full-width ${isLoading ? 'loading' : ''}`}
+              className="button button-primary full-width"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
