@@ -64,6 +64,8 @@ export const AuthProvider = ({ children }) => {
         await loadUserProfile(data.user.id);
         toast.success('Welcome back!');
       }
+      
+      return data;
     } catch (error) {
       console.error('Login error:', error);
       toast.error(error.message || 'Failed to sign in');
@@ -85,7 +87,10 @@ export const AuthProvider = ({ children }) => {
 
       if (data.user) {
         toast.success('Registration successful!');
+        await loadUserProfile(data.user.id);
       }
+      
+      return data;
     } catch (error) {
       console.error('Registration error:', error);
       toast.error(error.message || 'Failed to create account');

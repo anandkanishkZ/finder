@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Search, MapPin, PlusCircle, Settings } from 'lucide-react';
+import { Menu, X, Search, MapPin, PlusCircle, Settings, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/Navbar.css';
 
 const Navbar = () => {
-  const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -48,6 +48,10 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="navbar-auth">
+              <Link to="/profile" className="navbar-button profile">
+                <User className="navbar-link-icon" />
+                {user?.name || 'Profile'}
+              </Link>
               <button onClick={logout} className="navbar-button login">Logout</button>
             </div>
           )}
@@ -72,6 +76,12 @@ const Navbar = () => {
               <PlusCircle className="navbar-link-icon" />
               Report Item
             </Link>
+            {isAuthenticated && (
+              <Link to="/profile" className="navbar-mobile-link" onClick={toggleMenu}>
+                <User className="navbar-link-icon" />
+                Profile
+              </Link>
+            )}
             {isAdmin && (
               <Link to="/admin" className="navbar-mobile-link" onClick={toggleMenu}>
                 <Settings className="navbar-link-icon" />
