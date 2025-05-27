@@ -52,20 +52,18 @@ const LoginPage = () => {
     }
     
     setIsSubmitting(true);
+    setErrors({});
     
     try {
       await login(formData.email, formData.password);
-      navigate(redirectTo || '/');
+      navigate(redirectTo || '/profile');
     } catch (error) {
-      // Check for specific Supabase error messages
       if (error.message?.includes('invalid_credentials')) {
         setErrors({
-          ...errors,
           general: 'The email or password you entered is incorrect. Please try again.',
         });
       } else {
         setErrors({
-          ...errors,
           general: 'An error occurred while signing in. Please try again.',
         });
       }
@@ -149,9 +147,9 @@ const LoginPage = () => {
               <span>Remember me</span>
             </label>
             
-            <a href="#" className="forgot-password">
+            <Link to="/forgot-password" className="forgot-password">
               Forgot your password?
-            </a>
+            </Link>
           </div>
           
           <div className="form-actions">

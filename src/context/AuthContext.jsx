@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (error) throw error;
-      
+
       if (data.user) {
         await loadUserProfile(data.user.id);
         toast.success('Welcome back!');
