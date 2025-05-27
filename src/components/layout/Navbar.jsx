@@ -43,7 +43,7 @@ const Navbar = () => {
         <div className="navbar-right">
           {!isAuthenticated ? (
             <div className="navbar-auth">
-              <Link to="/login" className="navbar-button login">Login</Link>
+              <Link to="/login\" className="navbar-button login">Login</Link>
               <Link to="/register" className="navbar-button register">Register</Link>
             </div>
           ) : (
