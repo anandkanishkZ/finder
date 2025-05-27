@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
         toast.success('Welcome back!');
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast.error(error.message || 'Failed to sign in');
       throw error;
     }
@@ -83,9 +84,10 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
 
       if (data.user) {
-        toast.success('Registration successful! Please check your email to verify your account.');
+        toast.success('Registration successful!');
       }
     } catch (error) {
+      console.error('Registration error:', error);
       toast.error(error.message || 'Failed to create account');
       throw error;
     }
@@ -98,6 +100,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       toast.success('Logged out successfully');
     } catch (error) {
+      console.error('Logout error:', error);
       toast.error(error.message || 'Failed to log out');
       throw error;
     }

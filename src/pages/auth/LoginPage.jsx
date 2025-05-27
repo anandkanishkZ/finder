@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import '../../styles/LoginPage.css';
 
 const LoginPage = () => {
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { redirectTo } = location.state || {};
@@ -16,12 +16,12 @@ const LoginPage = () => {
   });
   
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     
-    // Clear error for this field
     if (errors[name]) {
       setErrors({ ...errors, [name]: undefined });
     }
@@ -47,9 +47,11 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    if (!validateForm() || isSubmitting) {
       return;
     }
+    
+    setIsSubmitting(true);
     
     try {
       await login(formData.email, formData.password);
@@ -59,6 +61,8 @@ const LoginPage = () => {
         ...errors,
         general: 'Invalid email or password',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -99,6 +103,7 @@ const LoginPage = () => {
                   onChange={handleInputChange}
                   className={`form-input ${errors.email ? 'error' : ''}`}
                   placeholder="your@email.com"
+                  disabled={isSubmitting}
                 />
               </div>
               {errors.email && <p className="error-message">{errors.email}</p>}
@@ -119,6 +124,7 @@ const LoginPage = () => {
                   onChange={handleInputChange}
                   className={`form-input ${errors.password ? 'error' : ''}`}
                   placeholder="••••••••"
+                  disabled={isSubmitting}
                 />
               </div>
               {errors.password && <p className="error-message">{errors.password}</p>}
@@ -130,6 +136,7 @@ const LoginPage = () => {
               <input
                 type="checkbox"
                 className="checkbox"
+                disabled={isSubmitting}
               />
               <span>Remember me</span>
             </label>
@@ -142,10 +149,10 @@ const LoginPage = () => {
           <div className="form-actions">
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="button button-primary full-width"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isSubmitting ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>

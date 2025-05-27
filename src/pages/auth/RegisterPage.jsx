@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import '../../styles/RegisterPage.css';
 
 const RegisterPage = () => {
-  const { register, isLoading } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -16,6 +16,7 @@ const RegisterPage = () => {
   });
   
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,9 +56,11 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    if (!validateForm() || isSubmitting) {
       return;
     }
+    
+    setIsSubmitting(true);
     
     try {
       await register(formData.name, formData.email, formData.password);
@@ -67,6 +70,8 @@ const RegisterPage = () => {
         ...errors,
         general: error.message || 'Registration failed. Please try again.',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -99,6 +104,7 @@ const RegisterPage = () => {
                 onChange={handleInputChange}
                 className={errors.name ? 'error' : ''}
                 placeholder="John Doe"
+                disabled={isSubmitting}
               />
             </div>
             {errors.name && <span className="error-message">{errors.name}</span>}
@@ -116,6 +122,7 @@ const RegisterPage = () => {
                 onChange={handleInputChange}
                 className={errors.email ? 'error' : ''}
                 placeholder="your@email.com"
+                disabled={isSubmitting}
               />
             </div>
             {errors.email && <span className="error-message">{errors.email}</span>}
@@ -133,6 +140,7 @@ const RegisterPage = () => {
                 onChange={handleInputChange}
                 className={errors.password ? 'error' : ''}
                 placeholder="••••••••"
+                disabled={isSubmitting}
               />
             </div>
             {errors.password && <span className="error-message">{errors.password}</span>}
@@ -150,6 +158,7 @@ const RegisterPage = () => {
                 onChange={handleInputChange}
                 className={errors.confirmPassword ? 'error' : ''}
                 placeholder="••••••••"
+                disabled={isSubmitting}
               />
             </div>
             {errors.confirmPassword && (
@@ -157,8 +166,8 @@ const RegisterPage = () => {
             )}
           </div>
 
-          <button type="submit" className="create-account-button" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create account'}
+          <button type="submit" className="create-account-button" disabled={isSubmitting}>
+            {isSubmitting ? 'Creating account...' : 'Create account'}
           </button>
 
           <p className="terms-text">
