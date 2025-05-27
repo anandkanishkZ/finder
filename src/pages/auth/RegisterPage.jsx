@@ -61,21 +61,21 @@ const RegisterPage = () => {
     }
     
     setIsSubmitting(true);
+    setErrors({});
     
     try {
-      await register(formData.name, formData.email, formData.password);
-      navigate('/');
+      const { data } = await register(formData.name, formData.email, formData.password);
+      if (data?.user) {
+        navigate('/profile');
+      }
     } catch (error) {
-      // Check for specific Supabase error messages
       if (error.message?.includes('user_already_exists')) {
         setErrors({
-          ...errors,
           email: 'This email is already registered. Please sign in instead.',
-          general: 'An account with this email already exists. Would you like to sign in?',
+          general: 'An account with this email already exists.',
         });
       } else {
         setErrors({
-          ...errors,
           general: error.message || 'Registration failed. Please try again.',
         });
       }
@@ -101,7 +101,7 @@ const RegisterPage = () => {
             {errors.general}
             {errors.email?.includes('already registered') && (
               <div className="mt-2">
-                <Link to="/login\" className="text-primary hover:underline">
+                <Link to="/login" className="text-primary hover:underline">
                   Click here to sign in
                 </Link>
               </div>

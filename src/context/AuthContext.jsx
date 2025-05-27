@@ -63,12 +63,10 @@ export const AuthProvider = ({ children }) => {
       if (data.user) {
         await loadUserProfile(data.user.id);
         toast.success('Welcome back!');
+        return data;
       }
-      
-      return data;
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.message || 'Failed to sign in');
       throw error;
     }
   };
@@ -86,14 +84,25 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error;
 
       if (data.user) {
-        toast.success('Registration successful!');
+        // Create profile immediately after registration
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: data.user.id,
+              name,
+              email,
+            }
+          ]);
+
+        if (profileError) throw profileError;
+
         await loadUserProfile(data.user.id);
+        toast.success('Registration successful!');
+        return data;
       }
-      
-      return data;
     } catch (error) {
       console.error('Registration error:', error);
-      toast.error(error.message || 'Failed to create account');
       throw error;
     }
   };
