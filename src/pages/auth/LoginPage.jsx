@@ -57,10 +57,18 @@ const LoginPage = () => {
       await login(formData.email, formData.password);
       navigate(redirectTo || '/');
     } catch (error) {
-      setErrors({
-        ...errors,
-        general: 'Invalid email or password',
-      });
+      // Check for specific Supabase error messages
+      if (error.message?.includes('invalid_credentials')) {
+        setErrors({
+          ...errors,
+          general: 'The email or password you entered is incorrect. Please try again.',
+        });
+      } else {
+        setErrors({
+          ...errors,
+          general: 'An error occurred while signing in. Please try again.',
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
