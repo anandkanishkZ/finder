@@ -101,7 +101,7 @@ const RegisterPage = () => {
             {errors.general}
             {errors.email?.includes('already registered') && (
               <div className="mt-2">
-                <Link to="/login\" className="text-primary hover:underline">
+                <Link to="/login" className="text-primary hover:underline">
                   Click here to sign in
                 </Link>
               </div>
