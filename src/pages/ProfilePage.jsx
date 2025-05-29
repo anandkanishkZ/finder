@@ -4,6 +4,7 @@ import { User, Mail, Phone, MapPin, Save } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
+import '../styles/ProfilePage.css';
 
 const ProfilePage = () => {
   const { user, isLoading } = useAuth();
@@ -71,138 +72,122 @@ const ProfilePage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      <div className="profile-page">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white shadow rounded-lg p-6 md:p-8">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-500">Member since</span>
-              <span className="text-sm font-medium text-gray-900">
-                {new Date(user?.created_at).toLocaleDateString()}
-              </span>
+    <div className="profile-page">
+      <div className="profile-container">
+        <div className="profile-card">
+          <div className="profile-header">
+            <h1 className="profile-title">Profile Settings</h1>
+            <div className="member-since">
+              Member since {new Date(user?.created_at).toLocaleDateString()}
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="Your full name"
-                  />
-                </div>
+          <form onSubmit={handleSubmit} className="profile-form">
+            <div className="form-group">
+              <label className="form-label">Full Name</label>
+              <div className="input-wrapper">
+                <User className="input-icon" />
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Your full name"
+                  disabled={isSubmitting}
+                />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Email Address
-                </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md bg-gray-50"
-                    disabled
-                  />
-                </div>
-                <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <div className="input-wrapper">
+                <Mail className="input-icon" />
+                <input
+                  type="email"
+                  value={formData.email}
+                  className="form-input"
+                  disabled
+                />
               </div>
+              <p className="form-hint">Email cannot be changed</p>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Phone Number
-                </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="tel"
-                    name="phone_number"
-                    value={formData.phone_number}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="Your phone number"
-                  />
-                </div>
+            <div className="form-group">
+              <label className="form-label">Phone Number</label>
+              <div className="input-wrapper">
+                <Phone className="input-icon" />
+                <input
+                  type="tel"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Your phone number"
+                  disabled={isSubmitting}
+                />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Preferred Meeting Points
-                </label>
-                <div className="mt-1 space-y-2">
-                  <div className="flex gap-2">
-                    <div className="relative rounded-md shadow-sm flex-1">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MapPin className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        value={newMeetingPoint}
-                        onChange={(e) => setNewMeetingPoint(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                        placeholder="Add a meeting point"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleAddMeetingPoint}
-                      className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                    >
-                      Add
-                    </button>
+            <div className="form-group">
+              <label className="form-label">Preferred Meeting Points</label>
+              <div className="meeting-points">
+                <div className="meeting-point-input">
+                  <div className="input-wrapper">
+                    <MapPin className="input-icon" />
+                    <input
+                      type="text"
+                      value={newMeetingPoint}
+                      onChange={(e) => setNewMeetingPoint(e.target.value)}
+                      className="form-input"
+                      placeholder="Add a meeting point"
+                      disabled={isSubmitting}
+                    />
                   </div>
-                  <div className="space-y-2">
-                    {formData.preferred_meeting_points?.map((point, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between bg-gray-50 p-2 rounded-md"
+                  <button
+                    type="button"
+                    onClick={handleAddMeetingPoint}
+                    className="save-button"
+                    disabled={!newMeetingPoint.trim() || isSubmitting}
+                  >
+                    Add
+                  </button>
+                </div>
+
+                <div className="meeting-point-list">
+                  {formData.preferred_meeting_points?.map((point, index) => (
+                    <div key={index} className="meeting-point-item">
+                      <span className="meeting-point-text">{point}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMeetingPoint(index)}
+                        className="remove-button"
+                        disabled={isSubmitting}
                       >
-                        <span className="text-sm text-gray-700">{point}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveMeetingPoint(index)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                        Remove
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end pt-6">
+            <div className="form-actions">
               <button
                 type="submit"
+                className="save-button"
                 disabled={isSubmitting}
-                className="flex items-center px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
               >
-                <Save className="h-5 w-5 mr-2" />
+                <Save className="save-icon" />
                 {isSubmitting ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
